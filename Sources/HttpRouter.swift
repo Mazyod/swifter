@@ -116,7 +116,7 @@ open class HttpRouter {
             var currentIndex = index + 1
             let variableNodes = node.nodes.filter { $0.0.first == ":" }
             if let variableNode = variableNodes.first {
-                if currentIndex == count && variableNode.1.isEndOfRoute {
+                if variableNode.1.isEndOfRoute {
                     // if it's the last element of the pattern and it's a variable, stop the search and
                     // append a tail as a value for the variable.
                     let tail = pattern[currentIndex..<count].joined(separator: "/")
