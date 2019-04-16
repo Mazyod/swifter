@@ -23,8 +23,9 @@ public class HttpParser {
         }
         let request = HttpRequest()
         request.method = statusLineTokens[0]
-        request.path = statusLineTokens[1]
-        request.queryParams = extractQueryParams(request.path)
+        let urlComponents = URLComponents(string: statusLineTokens[1])
+        request.path = urlComponents?.path ?? ""
+        request.queryParams = urlComponents?.queryItems?.map { ($0.name, $0.value ?? "") } ?? []
         request.headers = try readHeaders(socket)
         if let contentLength = request.headers["content-length"], let contentLengthValue = Int(contentLength) {
             request.body = try readBody(socket, size: contentLengthValue)
@@ -32,51 +33,6 @@ public class HttpParser {
         return request
     }
     
-    private func extractQueryParams(_ url: String) -> [(String, String)] {
-        #if compiler(>=5.0)
-        guard let questionMarkIndex = url.firstIndex(of: "?") else {
-            return []
-        }
-        #else
-        guard let questionMarkIndex = url.index(of: "?") else {
-            return []
-        }
-        #endif
-        let queryStart = url.index(after: questionMarkIndex)
-
-        guard url.endIndex > queryStart else { return [] }
-
-        #if swift(>=4.0)
-        let query = String(url[queryStart..<url.endIndex])
-        #else
-        guard let query = String(url[queryStart..<url.endIndex]) else { return [] }
-        #endif
-
-        return query.components(separatedBy: "&")
-            .reduce([(String, String)]()) { (c, s) -> [(String, String)] in
-                #if compiler(>=5.0)
-                guard let nameEndIndex = s.firstIndex(of: "=") else {
-                    return c
-                }
-                #else
-                guard let nameEndIndex = s.index(of: "=") else {
-                    return c
-                }
-                #endif
-                guard let name = String(s[s.startIndex..<nameEndIndex]).removingPercentEncoding else {
-                    return c
-                }
-                let valueStartIndex = s.index(nameEndIndex, offsetBy: 1)
-                guard valueStartIndex < s.endIndex else {
-                    return c + [(name, "")]
-                }
-                guard let value = String(s[valueStartIndex..<s.endIndex]).removingPercentEncoding else {
-                    return c + [(name, "")]
-                }
-                return c + [(name, value)]
-        }
-    }
-
     private func readBody(_ socket: Socket, size: Int) throws -> [UInt8] {
         return try socket.read(length: size)
     }
