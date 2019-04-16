@@ -32,7 +32,7 @@ public class HttpParser {
         }
         return request
     }
-    
+
     private func readBody(_ socket: Socket, size: Int) throws -> [UInt8] {
         return try socket.read(length: size)
     }
