@@ -7,7 +7,7 @@
 
 import Foundation
 
-
+// swiftlint:disable function_body_length
 public func demoServer(_ publicDir: String) -> HttpServer {
     
     print(publicDir)
@@ -20,32 +20,32 @@ public func demoServer(_ publicDir: String) -> HttpServer {
 
     server["/magic"] = { .ok(.html("You asked for " + $0.path)) }
 
-    server["/raw"] = { r in
+    server["/raw"] = { _ in
         return HttpResponse.raw(200, "OK", ["XXX-Custom-Header": "value"], { try $0.write([UInt8]("test".utf8)) })
     }
     
-    server["/redirect/permanently"] = { r in
+    server["/redirect/permanently"] = { _ in
         return .movedPermanently("http://www.google.com")
     }
     
-    server["/redirect/temporarily"] = { r in
+    server["/redirect/temporarily"] = { _ in
         return .movedTemporarily("http://www.google.com")
     }
 
-    server["/long"] = { r in
+    server["/long"] = { _ in
         var longResponse = ""
-        for k in 0..<1000 { longResponse += "(\(k)),->" }
+        for index in 0..<1000 { longResponse += "(\(index)),->" }
         return .ok(.html(longResponse))
     }
     
-    server["/wildcard/*/test/*/:param"] = { r in
-        return .ok(.html(r.path))
+    server["/wildcard/*/test/*/:param"] = { request in
+        return .ok(.html(request.path))
     }
     
-    server["/stream"] = { r in
-        return HttpResponse.raw(200, "OK", nil, { w in
-            for i in 0...100 {
-                try w.write([UInt8]("[chunk \(i)]".utf8))
+    server["/stream"] = { _ in
+        return HttpResponse.raw(200, "OK", nil, { writer in
+            for index in 0...100 {
+                try writer.write([UInt8]("[chunk \(index)]".utf8))
             }
         })
     }
@@ -54,20 +54,20 @@ public func demoServer(_ publicDir: String) -> HttpServer {
         session.writeText(text)
     }, binary: { (session, binary) in
         session.writeBinary(binary)
-    }, pong: { (session, pong) in
+    }, pong: { (_, _) in
         // Got a pong frame
-    }, connected: { (session) in
+    }, connected: { _ in
         // New client connected
-    }, disconnected: { (session) in
+    }, disconnected: { _ in
         // Client disconnected
     })
     
-    server.notFoundHandler = { r in
+    server.notFoundHandler = { _ in
         return .movedPermanently("https://github.com/404")
     }
     
-    server.middleware.append { r in
-        print("Middleware: \(r.address ?? "unknown address") -> \(r.method) -> \(r.path)")
+    server.middleware.append { request in
+        print("Middleware: \(request.address ?? "unknown address") -> \(request.method) -> \(request.path)")
         return nil
     }
     

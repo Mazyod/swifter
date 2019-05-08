@@ -11,16 +11,22 @@ import XCTest
 
 class IOSafetyTests: XCTestCase {
     var server: HttpServer!
+    var urlSession: URLSession!
 
     override func setUp() {
         super.setUp()
         server = HttpServer.pingServer()
+        urlSession = URLSession(configuration: .default)
     }
     
     override func tearDown() {
         if server.operating {
             server.stop()
         }
+        
+        urlSession = nil
+        server = nil
+        
         super.tearDown()
     }
 
@@ -29,15 +35,15 @@ class IOSafetyTests: XCTestCase {
             server = HttpServer.pingServer()
             do {
                 try server.start()
-                XCTAssertFalse(URLSession.shared.retryPing())
+                XCTAssertFalse(urlSession.retryPing())
                 (0...100).forEach { _ in
                     DispatchQueue.global(qos: DispatchQoS.default.qosClass).sync {
-                        URLSession.shared.pingTask { _, _, _ in }.resume()
+                        urlSession.pingTask { _, _, _ in }.resume()
                     }
                 }
                 server.stop()
-            } catch let e {
-                XCTFail("\(cpt): \(e)")
+            } catch let error {
+                XCTFail("\(cpt): \(error)")
             }
         }
     }

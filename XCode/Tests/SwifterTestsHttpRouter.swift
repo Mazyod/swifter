@@ -11,11 +11,21 @@ import XCTest
 
 class SwifterTestsHttpRouter: XCTestCase {
     
+    var router: HttpRouter!
+    
+    override func setUp() {
+        super.setUp()
+        router = HttpRouter()
+    }
+    
+    override func tearDown() {
+        router = nil
+        super.tearDown()
+    }
+    
     func testHttpRouterSlashRoot() {
         
-        let router = HttpRouter()
-        
-        router.register(nil, path: "/", handler: { r in
+        router.register(nil, path: "/", handler: { _ in
             return .ok(.html("OK"))
         })
         
@@ -24,9 +34,7 @@ class SwifterTestsHttpRouter: XCTestCase {
     
     func testHttpRouterSimplePathSegments() {
         
-        let router = HttpRouter()
-        
-        router.register(nil, path: "/a/b/c/d", handler: { r in
+        router.register(nil, path: "/a/b/c/d", handler: { _ in
             return .ok(.html("OK"))
         })
         
@@ -39,9 +47,7 @@ class SwifterTestsHttpRouter: XCTestCase {
     
     func testHttpRouterSinglePathSegmentWildcard() {
         
-        let router = HttpRouter()
-        
-        router.register(nil, path: "/a/*/c/d", handler: { r in
+        router.register(nil, path: "/a/*/c/d", handler: { _ in
             return .ok(.html("OK"))
         })
         
@@ -54,10 +60,8 @@ class SwifterTestsHttpRouter: XCTestCase {
     }
     
     func testHttpRouterVariables() {
+        router.register(nil, path: "/a/:arg1/:arg2/b/c/d/:arg3", handler: { _ in
         
-        let router = HttpRouter()
-        
-        router.register(nil, path: "/a/:arg1/:arg2/b/c/d/:arg3", handler: { r in
             return .ok(.html("OK"))
         })
         
@@ -71,9 +75,7 @@ class SwifterTestsHttpRouter: XCTestCase {
     
     func testHttpRouterMultiplePathSegmentWildcards() {
         
-        let router = HttpRouter()
-        
-        router.register(nil, path: "/a/**/e/f/g", handler: { r in
+        router.register(nil, path: "/a/**/e/f/g", handler: { _ in
             return .ok(.html("OK"))
         })
         
@@ -101,16 +103,13 @@ class SwifterTestsHttpRouter: XCTestCase {
 
     func testHttpRouterEmptyTail() {
         
-        let router = HttpRouter()
-        
-        router.register(nil, path: "/a/b/", handler: { r in
+        router.register(nil, path: "/a/b/", handler: { _ in
             return .ok(.html("OK"))
         })
         
-        router.register(nil, path: "/a/b/:var", handler: { r in
+        router.register(nil, path: "/a/b/:var", handler: { _ in
             return .ok(.html("OK"))
         })
-        
         
         XCTAssertNil(router.route(nil, path: "/"))
         XCTAssertNil(router.route(nil, path: "/a"))
@@ -124,11 +123,10 @@ class SwifterTestsHttpRouter: XCTestCase {
     
     func testHttpRouterPercentEncodedPathSegments() {
         
-        let router = HttpRouter()
-        
-        router.register(nil, path: "/a/<>/^", handler: { r in
+        router.register(nil, path: "/a/<>/^", handler: { _ in
             return .ok(.html("OK"))
         })
+        
         XCTAssertNil(router.route(nil, path: "/"))
         XCTAssertNil(router.route(nil, path: "/a"))
         XCTAssertNotNil(router.route(nil, path: "/a/%3C%3E/%5E"))
@@ -136,7 +134,6 @@ class SwifterTestsHttpRouter: XCTestCase {
     
     func testHttpRouterHandlesOverlappingPaths() {
         
-        let router = HttpRouter()
         let request = HttpRequest()
         
         let staticRouteExpectation = expectation(description: "Static Route")
@@ -171,12 +168,12 @@ class SwifterTestsHttpRouter: XCTestCase {
     }
     
     func testHttpRouterHandlesOverlappingPathsInDynamicRoutes() {
-        let router = HttpRouter()
+    
         let request = HttpRequest()
         
 //        let firstVariableRouteExpectation = expectation(description: "First Variable Route")
 //        var foundFirstVariableRoute = false
-//        router.register("GET", path: "a/:id") { request in
+//        router.register("GET", path: "a/:id") { _ in
 //            foundFirstVariableRoute = true
 //            firstVariableRouteExpectation.fulfill()
 //            return HttpResponse.accepted
@@ -206,12 +203,12 @@ class SwifterTestsHttpRouter: XCTestCase {
     }
     
     func testHttpRouterShouldHandleOverlappingRoutesInTrail() {
-        let router = HttpRouter()
+        
         let request = HttpRequest()
         
 //        let firstVariableRouteExpectation = expectation(description: "First Variable Route")
 //        var foundFirstVariableRoute = false
-//        router.register("GET", path: "/a/:id") { request in
+//        router.register("GET", path: "/a/:id") { _ in
 //            foundFirstVariableRoute = true
 //            firstVariableRouteExpectation.fulfill()
 //            return HttpResponse.accepted
@@ -227,7 +224,7 @@ class SwifterTestsHttpRouter: XCTestCase {
         
         let thirdVariableRouteExpectation = expectation(description: "Third Variable Route")
         var foundThirdVariableRoute = false
-        router.register("GET", path: "/a/:id/b") { request in
+        router.register("GET", path: "/a/:id/b") { _ in
             foundThirdVariableRoute = true
             thirdVariableRouteExpectation.fulfill()
             return HttpResponse.accepted
@@ -255,12 +252,12 @@ class SwifterTestsHttpRouter: XCTestCase {
     }
     
     func testHttpRouterHandlesOverlappingPathsInDynamicRoutesInTheMiddle() {
-        let router = HttpRouter()
+        
         let request = HttpRequest()
         
         let firstVariableRouteExpectation = expectation(description: "First Variable Route")
         var foundFirstVariableRoute = false
-        router.register("GET", path: "/a/b/c/d/e") { request in
+        router.register("GET", path: "/a/b/c/d/e") { _ in
             foundFirstVariableRoute = true
             firstVariableRouteExpectation.fulfill()
             return HttpResponse.accepted

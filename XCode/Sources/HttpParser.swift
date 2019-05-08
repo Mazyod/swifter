@@ -8,7 +8,7 @@
 import Foundation
 
 enum HttpParserError: Error {
-    case InvalidStatusLine(String)
+    case invalidStatusLine(String)
 }
 
 public class HttpParser {
@@ -19,7 +19,7 @@ public class HttpParser {
         let statusLine = try socket.readLine()
         let statusLineTokens = statusLine.components(separatedBy: " ")
         if statusLineTokens.count < 3 {
-            throw HttpParserError.InvalidStatusLine(statusLine)
+            throw HttpParserError.invalidStatusLine(statusLine)
         }
         let request = HttpRequest()
         request.method = statusLineTokens[0]
@@ -31,7 +31,7 @@ public class HttpParser {
             request.body = try readBody(socket, size: contentLengthValue)
         }
         return request
-    }
+        }
 
     private func readBody(_ socket: Socket, size: Int) throws -> [UInt8] {
         return try socket.read(length: size)
@@ -39,7 +39,7 @@ public class HttpParser {
     
     private func readHeaders(_ socket: Socket) throws -> [String: String] {
         var headers = [String: String]()
-        while case let headerLine = try socket.readLine() , !headerLine.isEmpty {
+        while case let headerLine = try socket.readLine(), !headerLine.isEmpty {
             let headerTokens = headerLine.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: true).map(String.init)
             if let name = headerTokens.first, let value = headerTokens.last {
                 headers[name.lowercased()] = value.trimmingCharacters(in: .whitespaces)

@@ -20,9 +20,23 @@ All notable changes to this project will be documented in this file. Changes not
 
 ## Added
 - A new `CHANGELOG.md` to keep track of changes in the project. ([#385](https://github.com/httpswift/swifter/pull/385)) by [@Vkt0r](https://github.com/Vkt0r)
+- Added [Danger](https://danger.systems/ruby/) and Swiftlint to the project. ([#398](https://github.com/httpswift/swifter/pull/398)) by [@Vkt0r](https://github.com/Vkt0r)
 
 ## Fixed
+- An issue causing a crash regarding a thread race condition. ([#399](https://github.com/httpswift/swifter/pull/399)) by [@Vkt0r](https://github.com/Vkt0r)
 - An issue in the `HttpRouter` causing issues to handle routes with overlapping in the tail. ([#379](https://github.com/httpswift/swifter/pull/359), [#382](https://github.com/httpswift/swifter/pull/382)) by [@Vkt0r](https://github.com/Vkt0r)
+
+- Fixes build errors by excluding XC(UI)Test files from regular targets [#397](https://github.com/httpswift/swifter/pull/397)) by [@ChristianSteffens](https://github.com/ChristianSteffens)
+- Fixes `HttpRequest.path` value to be parsed without query parameters [#404](https://github.com/httpswift/swifter/pull/404)) by [@mazyod](https://github.com/mazyod)
+
+## Changed
+- Performance: Batch reads of websocket payloads rather than reading byte-by-byte. ([#387](https://github.com/httpswift/swifter/pull/387)) by [@lynaghk](https://github.com/lynaghk)
+- Podspec source_files updated to match source file directory changes. ([#400](https://github.com/httpswift/swifter/pull/400)) by [@welsonpan](https://github.com/welsonpan)
+- Refactor: Use Foundation API for Base64 encoding. ([#403](https://github.com/httpswift/swifter/pull/403)) by [@mazyod](https://github.com/mazyod)
+- Refactor: Use `URLComponents` for `HttpRequest` path and query parameters parsing [#404](https://github.com/httpswift/swifter/pull/404)) by [@mazyod](https://github.com/mazyod)
+
+## Removed
+- Dropped macOS 10.9 support [#404](https://github.com/httpswift/swifter/pull/404)) by [@mazyod](https://github.com/mazyod)
 
 # [1.4.6] 
 ## Added
