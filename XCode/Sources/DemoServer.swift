@@ -14,8 +14,6 @@ public func demoServer(_ publicDir: String) -> HttpServer {
     
     let server = HttpServer()
     
-    server["/public/:path"] = shareFilesFromDirectory(publicDir)
-
     server["/"] = { _ in return .ok(.json(["status": "ok"])) }
 
     server["/magic"] = { .ok(.html("You asked for " + $0.path)) }
