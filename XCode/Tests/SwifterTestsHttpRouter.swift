@@ -89,7 +89,7 @@ class SwifterTestsHttpRouter: XCTestCase {
 
         let router = HttpRouter()
 
-        router.register(nil, path: "/a/:b", handler: { r in
+        router.register(nil, path: "/a/:b", handler: { _ in
             return .ok(.html("OK"))
         })
 

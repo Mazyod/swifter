@@ -7,7 +7,6 @@
 
 import Foundation
 
-// swiftlint:disable function_body_length
 public func demoServer(_ publicDir: String) -> HttpServer {
     
     print(publicDir)
